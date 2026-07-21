@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — FABC</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  .admin-shell{ max-width: 760px; margin: 0 auto; }
+  .gate-box{ max-width: 380px; margin: 80px auto; text-align:center; }
+  .gate-box .field{ text-align:left; }
+  .admin-section{ margin-bottom: 40px; }
+  .admin-section h3{ margin-bottom: 4px; }
+  .admin-section .hint{ margin-bottom: 18px; }
+  .admin-row{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width:640px){ .admin-row{ grid-template-columns:1fr; } }
+  .admin-card{ border:1px solid var(--border); border-radius: var(--radius-md); padding:20px; margin-bottom:16px; background:#fff; }
+  .admin-card .tag{ margin-bottom:12px; }
+  .admin-bar{
+    position:sticky; bottom:0; background:#fff; border-top:1px solid var(--border);
+    padding:16px 0; margin-top:20px; display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap;
+  }
+  .lock-note{ display:flex; align-items:center; gap:8px; color:var(--ink-faint); font-size:.85rem; margin-bottom:24px; }
+  .lock-note svg{ width:16px; height:16px; flex-shrink:0; }
+
+  .admin-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:32px; border-bottom:1px solid var(--border); }
+  .tab-btn{
+    padding:12px 16px; border:none; background:none; cursor:pointer;
+    font-family:var(--font-display); font-weight:700; font-size:.82rem; letter-spacing:.03em; text-transform:uppercase;
+    color:var(--ink-faint); border-bottom:3px solid transparent; margin-bottom:-1px;
+    transition: color .15s var(--ease), border-color .15s var(--ease);
+  }
+  .tab-btn:hover{ color:var(--ink); }
+  .tab-btn.active{ color:var(--primary); border-bottom-color:var(--primary); }
+  .tab-panel[hidden]{ display:none; }
+  .admin-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .admin-card-head .tag{ margin-bottom:0; }
+  .remove-btn{ background:none; border:none; color:var(--danger); font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; cursor:pointer; font-family:var(--font-display); }
+  .remove-btn:hover{ text-decoration:underline; }
+  .add-card-btn{ margin-bottom:20px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="brand-mark">FA</span>FABC</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+      <li><a href="roster.html">Rosters</a></li>
+      <li><a href="bracket.html">Bracket</a></li>
+      <li><a href="vote.html">Games</a></li>
+      <li><a href="charities.html">Charities</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="index.html" class="btn btn-ghost btn-sm">Back to Site</a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- PASSWORD GATE -->
+  <section class="section--tight" id="gateView">
+    <div class="wrap">
+      <div class="card gate-box">
+        <div class="confirm-icon" style="background:var(--primary-tint);color:var(--primary-700);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+        </div>
+        <h2 style="font-size:1.5rem;">Admin access</h2>
+        <p>Enter the admin password to edit site content.</p>
+        <form id="gateForm">
+          <div class="field" id="field-password">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••" autocomplete="off">
+            <div class="error-msg">Incorrect password — try again.</div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Unlock</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN FORM (hidden until unlocked) -->
+  <section class="section--tight" id="adminView" hidden>
+    <div class="wrap admin-shell">
+      <div class="page-intro" style="margin-bottom:32px;">
+        <div class="eyebrow">Admin</div>
+        <h1 style="font-size:clamp(1.8rem,3.5vw,2.4rem);">Edit homepage content</h1>
+        <p>Changes save to this browser and appear on the homepage immediately — no code required.</p>
+      </div>
+
+      <div class="lock-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span>Changes here save to the shared backend and are visible to every visitor, not just this browser. If a save fails, the API/KV binding may not be set up yet — see README.md.</span>
+      </div>
+
+      <div class="admin-tabs">
+        <button type="button" class="tab-btn active" data-tab="home">Homepage</button>
+        <button type="button" class="tab-btn" data-tab="roster">Rosters</button>
+        <button type="button" class="tab-btn" data-tab="bracket">Brackets</button>
+        <button type="button" class="tab-btn" data-tab="vote">Vote For Your Game</button>
+        <button type="button" class="tab-btn" data-tab="charities">Charities</button>
+      </div>
+
+      <!-- HOMEPAGE TAB -->
+      <div class="tab-panel" data-panel="home">
+      <form id="contentForm">
+
+        <div class="admin-section">
+          <h3>Hero</h3>
+          <p class="hint">The top banner every visitor sees first.</p>
+          <div class="field"><label for="in-eyebrow">Eyebrow text</label><input type="text" id="in-eyebrow"></div>
+          <div class="field"><label for="in-herosub">Hero paragraph</label><textarea id="in-herosub"></textarea></div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Headline stats</h3>
+          <p class="hint">Shown under the hero buttons, and again in the closing section.</p>
+          <div class="admin-row">
+            <div class="field"><label for="in-statteams">Teams competing</label><input type="text" id="in-statteams"></div>
+            <div class="field"><label for="in-statraised">Raised this season</label><input type="text" id="in-statraised"></div>
+          </div>
+          <div class="field"><label for="in-statcharities">Charities supported</label><input type="text" id="in-statcharities"></div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Upcoming event</h3>
+          <p class="hint">Powers the dark status bar, the "Upcoming tournament" section, and the Rosters page title.</p>
+          <div class="admin-row">
+            <div class="field"><label for="in-eventname">Event name</label><input type="text" id="in-eventname"></div>
+            <div class="field"><label for="in-eventtype">Type / round</label><input type="text" id="in-eventtype"></div>
+          </div>
+          <div class="field"><label for="in-eventteams">Teams filled text</label><input type="text" id="in-eventteams"></div>
+          <div class="admin-row">
+            <div class="field"><label for="in-raised">Funds raised ($)</label><input type="text" inputmode="numeric" id="in-raised"></div>
+            <div class="field"><label for="in-goal">Funds goal ($)</label><input type="text" inputmode="numeric" id="in-goal"></div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>How it works — 4 steps</h3>
+          <p class="hint">The step cards under "From sign-up to trophy".</p>
+          <div id="stepsWrap"></div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Upcoming tournament cards</h3>
+          <p class="hint">The 3 cards: Schedule, Format, Prize.</p>
+          <div id="cardsWrap"></div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Closing call-to-action</h3>
+          <div class="field"><label for="in-ctaheading">Heading</label><input type="text" id="in-ctaheading"></div>
+          <div class="field"><label for="in-ctapara">Paragraph</label><textarea id="in-ctapara"></textarea></div>
+        </div>
+
+        <div class="admin-bar">
+          <button type="button" class="btn btn-ghost" id="resetBtn">Reset to defaults</button>
+          <a href="index.html" class="btn btn-ghost" target="_blank">Preview homepage</a>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+      </div>
+
+      <!-- ROSTERS TAB -->
+      <div class="tab-panel" data-panel="roster" hidden>
+        <form id="rosterForm">
+          <p class="hint">Edit or remove any registered team. Changes appear on the Rosters page.</p>
+          <div id="teamsWrap"></div>
+          <button type="button" class="btn btn-ghost add-card-btn" id="addTeamBtn">+ Add team</button>
+          <div class="admin-bar">
+            <button type="button" class="btn btn-ghost" id="resetTeamsBtn">Reset to defaults</button>
+            <a href="roster.html" class="btn btn-ghost" target="_blank">Preview Rosters</a>
+            <button type="submit" class="btn btn-primary">Save Rosters</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- BRACKETS TAB -->
+      <div class="tab-panel" data-panel="bracket" hidden>
+        <form id="bracketForm">
+          <p class="hint">Set the score, winner, and status for each match. Match slots are fixed by the bracket shape (quarterfinals → semifinals → final).</p>
+          <div id="matchesWrap"></div>
+          <div class="admin-bar">
+            <button type="button" class="btn btn-ghost" id="resetMatchesBtn">Reset to defaults</button>
+            <a href="bracket.html" class="btn btn-ghost" target="_blank">Preview Bracket</a>
+            <button type="submit" class="btn btn-primary">Save Bracket</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- VOTE TAB -->
+      <div class="tab-panel" data-panel="vote" hidden>
+        <form id="gamesForm">
+          <p class="hint">Add, edit, or remove the games the community can vote for.</p>
+          <div id="gamesWrap"></div>
+          <button type="button" class="btn btn-ghost add-card-btn" id="addGameBtn">+ Add game</button>
+          <div class="admin-bar">
+            <button type="button" class="btn btn-ghost" id="resetGamesBtn">Reset to defaults</button>
+            <a href="vote.html" class="btn btn-ghost" target="_blank">Preview Vote page</a>
+            <button type="submit" class="btn btn-primary">Save Games</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- CHARITIES TAB -->
+      <div class="tab-panel" data-panel="charities" hidden>
+        <form id="charitiesForm">
+          <p class="hint">Add, edit, or remove approved charities teams can play for.</p>
+          <div id="charitiesWrap"></div>
+          <button type="button" class="btn btn-ghost add-card-btn" id="addCharityBtn">+ Add charity</button>
+          <div class="admin-bar">
+            <button type="button" class="btn btn-ghost" id="resetCharitiesBtn">Reset to defaults</button>
+            <a href="charities.html" class="btn btn-ghost" target="_blank">Preview Charities page</a>
+            <button type="submit" class="btn btn-primary">Save Charities</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom"><span>© 2026 For A Better Cause. All matches, all in good fun, all for good.</span><span>Admin panel — not indexed, not linked publicly.</span></div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function(){
+  const gateView = document.getElementById('gateView');
+  const adminView = document.getElementById('adminView');
+  const gateForm = document.getElementById('gateForm');
+  const passwordInput = document.getElementById('password');
+  const gateSubmitBtn = gateForm.querySelector('button[type=submit]');
+
+  gateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    gateSubmitBtn.disabled = true;
+    gateSubmitBtn.textContent = 'Checking…';
+    const result = await fabcApiLogin(passwordInput.value);
+    gateSubmitBtn.disabled = false;
+    gateSubmitBtn.textContent = 'Unlock';
+
+    if (result.ok){
+      gateView.hidden = true;
+      adminView.hidden = false;
+      initForm();
+      initRosterTab();
+      initBracketTab();
+      initVoteTab();
+      initCharitiesTab();
+    } else {
+      document.getElementById('field-password').classList.add('has-error');
+      document.querySelector('#field-password .error-msg').textContent = result.error || 'Incorrect password — try again.';
+      passwordInput.focus();
+      passwordInput.select();
+    }
+  });
+  passwordInput.addEventListener('input', () => {
+    document.getElementById('field-password').classList.remove('has-error');
+  });
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.tab;
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.hidden = panel.dataset.panel !== target;
+      });
+    });
+  });
+
+  async function initForm(){
+    const c = await getFabcContent();
+
+    document.getElementById('in-eyebrow').value = c.hero.eyebrow;
+    document.getElementById('in-herosub').value = c.hero.sub;
+    document.getElementById('in-statteams').value = c.stats.teams;
+    document.getElementById('in-statraised').value = c.stats.raised;
+    document.getElementById('in-statcharities').value = c.stats.charities;
+    document.getElementById('in-eventname').value = c.event.name;
+    document.getElementById('in-eventtype').value = c.event.type;
+    document.getElementById('in-eventteams').value = c.event.teamsFilled;
+    document.getElementById('in-raised').value = c.event.raised;
+    document.getElementById('in-goal').value = c.event.goal;
+    document.getElementById('in-ctaheading').value = c.cta.heading;
+    document.getElementById('in-ctapara').value = c.cta.para;
+
+    const stepsWrap = document.getElementById('stepsWrap');
+    stepsWrap.innerHTML = '';
+    c.steps.forEach((s, i) => {
+      stepsWrap.insertAdjacentHTML('beforeend', `
+        <div class="admin-card">
+          <span class="tag">Step ${i+1}</span>
+          <div class="field"><label for="step${i}-title">Title</label><input type="text" id="step${i}-title" value="${escapeAttr(s.title)}"></div>
+          <div class="field" style="margin-bottom:0;"><label for="step${i}-desc">Description</label><textarea id="step${i}-desc">${escapeHtml(s.desc)}</textarea></div>
+        </div>
+      `);
+    });
+
+    const cardsWrap = document.getElementById('cardsWrap');
+    cardsWrap.innerHTML = '';
+    c.upcomingCards.forEach((card, i) => {
+      cardsWrap.insertAdjacentHTML('beforeend', `
+        <div class="admin-card">
+          <span class="tag">Card ${i+1}</span>
+          <div class="field"><label for="card${i}-tag">Label</label><input type="text" id="card${i}-tag" value="${escapeAttr(card.tag)}"></div>
+          <div class="field"><label for="card${i}-title">Title</label><input type="text" id="card${i}-title" value="${escapeAttr(card.title)}"></div>
+          <div class="field" style="margin-bottom:0;"><label for="card${i}-desc">Description</label><textarea id="card${i}-desc">${escapeHtml(card.desc)}</textarea></div>
+        </div>
+      `);
+    });
+  }
+
+  function escapeHtml(s){ return (s||'').replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g, '&quot;'); }
+
+  document.getElementById('contentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const steps = [0,1,2,3].map(i => ({
+      title: document.getElementById(`step${i}-title`).value.trim(),
+      desc: document.getElementById(`step${i}-desc`).value.trim(),
+    }));
+    const upcomingCards = [0,1,2].map(i => ({
+      tag: document.getElementById(`card${i}-tag`).value.trim(),
+      title: document.getElementById(`card${i}-title`).value.trim(),
+      desc: document.getElementById(`card${i}-desc`).value.trim(),
+    }));
+
+    const content = {
+      hero: {
+        eyebrow: document.getElementById('in-eyebrow').value.trim(),
+        sub: document.getElementById('in-herosub').value.trim(),
+      },
+      stats: {
+        teams: document.getElementById('in-statteams').value.trim(),
+        raised: document.getElementById('in-statraised').value.trim(),
+        charities: document.getElementById('in-statcharities').value.trim(),
+      },
+      event: {
+        name: document.getElementById('in-eventname').value.trim(),
+        type: document.getElementById('in-eventtype').value.trim(),
+        teamsFilled: document.getElementById('in-eventteams').value.trim(),
+        raised: Number(document.getElementById('in-raised').value) || 0,
+        goal: Number(document.getElementById('in-goal').value) || 0,
+      },
+      steps,
+      upcomingCards,
+      cta: {
+        heading: document.getElementById('in-ctaheading').value.trim(),
+        para: document.getElementById('in-ctapara').value.trim(),
+      },
+    };
+
+    const result = await saveFabcContent(content);
+    if (result.ok) fabcToast('Homepage content saved for everyone!', 'success');
+    else fabcToast(result.error || 'Could not save.', 'error');
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', async () => {
+    if (confirm('Reset all homepage content back to the original defaults, for everyone?')){
+      const result = await resetFabcContent();
+      if (result.ok){ await initForm(); fabcToast('Reset to defaults.', 'success'); }
+      else fabcToast(result.error || 'Could not reset.', 'error');
+    }
+  });
+
+  /* ================= ROSTERS TAB ================= */
+  async function initRosterTab(){
+    const wrap = document.getElementById('teamsWrap');
+    const FABC_DATA = await fabcLoadData();
+    const teams = JSON.parse(JSON.stringify(FABC_DATA.teams));
+    const games = FABC_DATA.games;
+    const charities = FABC_DATA.charities;
+
+    function render(){
+      wrap.innerHTML = '';
+      teams.forEach((t, i) => {
+        wrap.insertAdjacentHTML('beforeend', `
+          <div class="admin-card" data-idx="${i}">
+            <div class="admin-card-head">
+              <span class="tag">${escapeAttr(t.id)}</span>
+              <button type="button" class="remove-btn" data-remove="${i}">Remove team</button>
+            </div>
+            <div class="field"><label>Team name</label><input type="text" data-f="name" data-i="${i}" value="${escapeAttr(t.name)}"></div>
+            <div class="admin-row">
+              <div class="field"><label>Game</label>
+                <select data-f="game" data-i="${i}">
+                  ${games.map(g => `<option value="${g.id}" ${g.id===t.game?'selected':''}>${escapeAttr(g.name)}</option>`).join('')}
+                </select>
+              </div>
+              <div class="field"><label>Status</label>
+                <select data-f="status" data-i="${i}">
+                  <option value="confirmed" ${t.status==='confirmed'?'selected':''}>Confirmed</option>
+                  <option value="pending" ${t.status==='pending'?'selected':''}>Pending</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label>Charity</label>
+              <select data-f="charity" data-i="${i}">
+                ${charities.map(c => `<option value="${c.id}" ${c.id===t.charity?'selected':''}>${escapeAttr(c.name)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field"><label>Players (one per line)</label><textarea data-f="players" data-i="${i}" rows="4">${escapeHtml(t.players.join('\n'))}</textarea></div>
+            <div class="field" style="margin-bottom:0;"><label>Captain (player line number)</label><input type="text" inputmode="numeric" data-f="captain" data-i="${i}" value="${t.captainIdx+1}"></div>
+          </div>
+        `);
+      });
+      wrap.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          teams.splice(Number(btn.dataset.remove), 1);
+          render();
+        });
+      });
+    }
+    render();
+
+    document.getElementById('addTeamBtn').onclick = () => {
+      teams.push({ id: 't'+Date.now(), name: 'New Team', game: games[0]?.id||'', charity: charities[0]?.id||'', status:'pending', players:['Player1'], captainIdx:0 });
+      render();
+    };
+
+    document.getElementById('rosterForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      wrap.querySelectorAll('[data-f]').forEach(el => {
+        const i = Number(el.dataset.i), f = el.dataset.f;
+        if (f === 'players') teams[i].players = el.value.split('\n').map(s=>s.trim()).filter(Boolean);
+        else if (f === 'captain') teams[i].captainIdx = Math.max(0, (Number(el.value)||1) - 1);
+        else teams[i][f] = el.value;
+      });
+      const result = await fabcApiSave('teams', teams);
+      if (result.ok) fabcToast('Rosters saved for everyone!', 'success');
+      else fabcToast(result.error || 'Could not save rosters.', 'error');
+    });
+
+    document.getElementById('resetTeamsBtn').addEventListener('click', async () => {
+      if (confirm('Reset all teams back to the original defaults, for everyone?')){
+        const result = await fabcApiSave('teams', FABC_TEAMS);
+        if (result.ok){
+          teams.length = 0;
+          teams.push(...JSON.parse(JSON.stringify(FABC_TEAMS)));
+          render();
+          fabcToast('Rosters reset to defaults.', 'success');
+        } else fabcToast(result.error || 'Could not reset.', 'error');
+      }
+    });
+  }
+
+  /* ================= BRACKETS TAB ================= */
+  async function initBracketTab(){
+    const wrap = document.getElementById('matchesWrap');
+    const FABC_DATA = await fabcLoadData();
+    const matches = JSON.parse(JSON.stringify(FABC_DATA.matches));
+    const teams = FABC_DATA.teams;
+
+    function teamOptions(selectedId){
+      return `<option value="" ${!selectedId?'selected':''}>TBD</option>` +
+        teams.map(t => `<option value="${t.id}" ${t.id===selectedId?'selected':''}>${escapeAttr(t.name)}</option>`).join('');
+    }
+
+    function render(){
+      wrap.innerHTML = '';
+      matches.forEach((m, i) => {
+        wrap.insertAdjacentHTML('beforeend', `
+          <div class="admin-card" data-idx="${i}">
+            <div class="admin-card-head"><span class="tag">${escapeAttr(m.round)}</span></div>
+            <div class="admin-row">
+              <div class="field"><label>Team A</label><select data-f="teamA" data-i="${i}">${teamOptions(m.teamA)}</select></div>
+              <div class="field"><label>Team B</label><select data-f="teamB" data-i="${i}">${teamOptions(m.teamB)}</select></div>
+            </div>
+            <div class="admin-row">
+              <div class="field"><label>Score A</label><input type="text" inputmode="numeric" data-f="scoreA" data-i="${i}" value="${m.scoreA ?? ''}"></div>
+              <div class="field"><label>Score B</label><input type="text" inputmode="numeric" data-f="scoreB" data-i="${i}" value="${m.scoreB ?? ''}"></div>
+            </div>
+            <div class="admin-row">
+              <div class="field"><label>Status</label>
+                <select data-f="status" data-i="${i}">
+                  ${['completed','live','upcoming','tbd'].map(s => `<option value="${s}" ${s===m.status?'selected':''}>${s}</option>`).join('')}
+                </select>
+              </div>
+              <div class="field"><label>Schedule text (optional)</label><input type="text" data-f="schedule" data-i="${i}" value="${escapeAttr(m.schedule||'')}"></div>
+            </div>
+          </div>
+        `);
+      });
+    }
+    render();
+
+    document.getElementById('bracketForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      wrap.querySelectorAll('[data-f]').forEach(el => {
+        const i = Number(el.dataset.i), f = el.dataset.f;
+        if (f === 'teamA' || f === 'teamB') matches[i][f] = el.value || null;
+        else if (f === 'scoreA' || f === 'scoreB') matches[i][f] = el.value === '' ? null : Number(el.value);
+        else if (f === 'schedule') { if (el.value.trim()) matches[i].schedule = el.value.trim(); else delete matches[i].schedule; }
+        else matches[i][f] = el.value;
+      });
+      const result = await fabcApiSave('matches', matches);
+      if (result.ok) fabcToast('Bracket saved for everyone!', 'success');
+      else fabcToast(result.error || 'Could not save bracket.', 'error');
+    });
+
+    document.getElementById('resetMatchesBtn').addEventListener('click', async () => {
+      if (confirm('Reset the bracket back to the original defaults, for everyone?')){
+        const result = await fabcApiSave('matches', FABC_MATCHES);
+        if (result.ok){
+          matches.length = 0;
+          matches.push(...JSON.parse(JSON.stringify(FABC_MATCHES)));
+          render();
+          fabcToast('Bracket reset to defaults.', 'success');
+        } else fabcToast(result.error || 'Could not reset.', 'error');
+      }
+    });
+  }
+
+  /* ================= VOTE TAB ================= */
+  async function initVoteTab(){
+    const wrap = document.getElementById('gamesWrap');
+    const FABC_DATA = await fabcLoadData();
+    const games = JSON.parse(JSON.stringify(FABC_DATA.games));
+
+    function render(){
+      wrap.innerHTML = '';
+      games.forEach((g, i) => {
+        wrap.insertAdjacentHTML('beforeend', `
+          <div class="admin-card" data-idx="${i}">
+            <div class="admin-card-head">
+              <span class="tag">${escapeAttr(g.id)}</span>
+              <button type="button" class="remove-btn" data-remove="${i}">Remove game</button>
+            </div>
+            <div class="admin-row">
+              <div class="field"><label>Game name</label><input type="text" data-f="name" data-i="${i}" value="${escapeAttr(g.name)}"></div>
+              <div class="field"><label>Team size</label><input type="text" inputmode="numeric" data-f="teamSize" data-i="${i}" value="${g.teamSize}"></div>
+            </div>
+            <div class="field"><label>Short description</label><textarea data-f="blurb" data-i="${i}">${escapeHtml(g.blurb)}</textarea></div>
+            <div class="admin-row">
+              <div class="field"><label>Votes</label><input type="text" inputmode="numeric" data-f="votes" data-i="${i}" value="${g.votes}"></div>
+              <div class="field"><label>Card background (CSS gradient)</label><input type="text" data-f="art" data-i="${i}" value="${escapeAttr(g.art)}"></div>
+            </div>
+          </div>
+        `);
+      });
+      wrap.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => { games.splice(Number(btn.dataset.remove), 1); render(); });
+      });
+    }
+    render();
+
+    document.getElementById('addGameBtn').onclick = () => {
+      games.push({ id:'game'+Date.now(), name:'New Game', teamSize:5, blurb:'Describe this game.', votes:0, art:'linear-gradient(135deg,#2166C6,#154385)' });
+      render();
+    };
+
+    document.getElementById('gamesForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      wrap.querySelectorAll('[data-f]').forEach(el => {
+        const i = Number(el.dataset.i), f = el.dataset.f;
+        if (f === 'teamSize' || f === 'votes') games[i][f] = Number(el.value) || 0;
+        else games[i][f] = el.value;
+      });
+      const result = await fabcApiSave('games', games);
+      if (result.ok) fabcToast('Games saved for everyone!', 'success');
+      else fabcToast(result.error || 'Could not save games.', 'error');
+    });
+
+    document.getElementById('resetGamesBtn').addEventListener('click', async () => {
+      if (confirm('Reset games back to the original defaults, for everyone?')){
+        const result = await fabcApiSave('games', FABC_GAMES);
+        if (result.ok){
+          games.length = 0;
+          games.push(...JSON.parse(JSON.stringify(FABC_GAMES)));
+          render();
+          fabcToast('Games reset to defaults.', 'success');
+        } else fabcToast(result.error || 'Could not reset.', 'error');
+      }
+    });
+  }
+
+  /* ================= CHARITIES TAB ================= */
+  async function initCharitiesTab(){
+    const wrap = document.getElementById('charitiesWrap');
+    const FABC_DATA = await fabcLoadData();
+    const charities = JSON.parse(JSON.stringify(FABC_DATA.charities));
+
+    function render(){
+      wrap.innerHTML = '';
+      charities.forEach((c, i) => {
+        wrap.insertAdjacentHTML('beforeend', `
+          <div class="admin-card" data-idx="${i}">
+            <div class="admin-card-head">
+              <span class="tag">${escapeAttr(c.id)}</span>
+              <button type="button" class="remove-btn" data-remove="${i}">Remove charity</button>
+            </div>
+            <div class="admin-row">
+              <div class="field"><label>Name</label><input type="text" data-f="name" data-i="${i}" value="${escapeAttr(c.name)}"></div>
+              <div class="field"><label>Category</label><input type="text" data-f="category" data-i="${i}" value="${escapeAttr(c.category)}"></div>
+            </div>
+            <div class="field"><label>Description</label><textarea data-f="desc" data-i="${i}">${escapeHtml(c.desc)}</textarea></div>
+            <div class="admin-row">
+              <div class="field"><label>Website URL</label><input type="text" data-f="url" data-i="${i}" value="${escapeAttr(c.url)}"></div>
+              <div class="field"><label>Location</label><input type="text" data-f="location" data-i="${i}" value="${escapeAttr(c.location)}"></div>
+            </div>
+          </div>
+        `);
+      });
+      wrap.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => { charities.splice(Number(btn.dataset.remove), 1); render(); });
+      });
+    }
+    render();
+
+    document.getElementById('addCharityBtn').onclick = () => {
+      charities.push({ id:'charity'+Date.now(), name:'New Charity', category:'General', desc:'Describe this charity.', url:'https://', location:'' });
+      render();
+    };
+
+    document.getElementById('charitiesForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      wrap.querySelectorAll('[data-f]').forEach(el => {
+        const i = Number(el.dataset.i), f = el.dataset.f;
+        charities[i][f] = el.value;
+      });
+      const result = await fabcApiSave('charities', charities);
+      if (result.ok) fabcToast('Charities saved for everyone!', 'success');
+      else fabcToast(result.error || 'Could not save charities.', 'error');
+    });
+
+    document.getElementById('resetCharitiesBtn').addEventListener('click', async () => {
+      if (confirm('Reset charities back to the original defaults, for everyone?')){
+        const result = await fabcApiSave('charities', FABC_CHARITIES);
+        if (result.ok){
+          charities.length = 0;
+          charities.push(...JSON.parse(JSON.stringify(FABC_CHARITIES)));
+          render();
+          fabcToast('Charities reset to defaults.', 'success');
+        } else fabcToast(result.error || 'Could not reset.', 'error');
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote for a Game — FABC</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="brand-mark">FA</span>FABC</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+      <li><a href="roster.html">Rosters</a></li>
+      <li><a href="bracket.html">Bracket</a></li>
+      <li><a href="vote.html" aria-current="page">Games</a></li>
+      <li><a href="charities.html">Charities</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="bracket.html" class="btn btn-ghost btn-sm">View Tournament</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Sign Up Your Team</a>
+      <a href="admin.html" class="nav-admin-btn" title="Admin" aria-label="Admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="section--tight">
+    <div class="wrap page-intro">
+      <div class="eyebrow">Community vote</div>
+      <h1 style="font-size:clamp(2rem,4vw,2.8rem);">Pick the next game</h1>
+      <p>Help decide what FABC runs tournaments for next season. Vote once per game — results update live below.</p>
+    </div>
+  </section>
+
+  <section class="section--tight" style="padding-top:0;">
+    <div class="wrap">
+      <div class="status-bar" style="margin-bottom:40px;">
+        <div class="status-item"><span>Current leader</span><b id="leaderName">—</b></div>
+        <div class="status-item"><span>Leading votes</span><b class="mono" id="leaderVotes">—</b></div>
+        <div class="status-item"><span>Total votes cast</span><b class="mono" id="totalVotes">—</b></div>
+      </div>
+
+      <div class="grid grid-3" id="gameGrid"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div><a href="index.html" class="brand" style="color:#fff;"><span class="brand-mark">FA</span>FABC</a><p style="margin-top:14px;max-width:280px;">For A Better Cause is a community gaming group running charity tournaments across the games you already play.</p></div>
+      <div><h4>Tournament</h4><ul><li><a href="signup.html">Sign Up</a></li><li><a href="roster.html">Rosters</a></li><li><a href="bracket.html">Bracket</a></li></ul></div>
+      <div><h4>Community</h4><ul><li><a href="vote.html">Games</a></li><li><a href="charities.html">Charities</a></li></ul></div>
+      <div><h4>Follow</h4><ul><li><a href="https://x.com/BattleFABC" target="_blank" rel="noopener">X / Twitter</a></li><li><a href="#">Discord</a></li><li><a href="#">Twitch</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 For A Better Cause. All matches, all in good fun, all for good.</span><span>Built for the community, by the community.</span></div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+<script>
+(async function(){
+  const FABC_DATA = await fabcLoadData();
+  const grid = document.getElementById('gameGrid');
+  let games = JSON.parse(JSON.stringify(FABC_DATA.games));
+
+  const myVoteResult = await fabcApiGetMyVote();
+  let myVote = myVoteResult.gameId; // this visitor's current vote (by IP), or null
+
+  function totals(){
+    const total = games.reduce((s,g)=>s+g.votes,0);
+    const leader = [...games].sort((a,b)=>b.votes-a.votes)[0];
+    document.getElementById('leaderName').textContent = leader.name;
+    document.getElementById('leaderVotes').textContent = leader.votes.toLocaleString();
+    document.getElementById('totalVotes').textContent = total.toLocaleString();
+    return { total, leader };
+  }
+
+  function render(){
+    const { total, leader } = totals();
+    grid.innerHTML = '';
+    games.forEach(g => {
+      const pct = total ? Math.round((g.votes/total)*100) : 0;
+      const isLeader = g.id === leader.id;
+      const isVoted = myVote === g.id;
+      const card = fabcEl(`
+        <div class="card game-card reveal in">
+          <div class="game-art" style="background-image:${g.art}">
+            ${isLeader ? '<span class="badge badge-open leader-flag">🏆 Leading</span>' : ''}
+          </div>
+          <div class="game-body">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <h3 class="mb-0">${g.name}</h3>
+              <span class="tag">${g.teamSize}v${g.teamSize}</span>
+            </div>
+            <p style="margin:10px 0 0;">${g.blurb}</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+              <span class="vote-count">${g.votes.toLocaleString()} votes</span>
+              <span class="muted mono" style="font-size:.8rem;">${pct}%</span>
+            </div>
+            <div class="vote-bar-track"><div class="vote-bar-fill" style="width:${pct}%"></div></div>
+            <button class="btn btn-primary vote-btn ${isVoted?'voted':''}" data-id="${g.id}">
+              ${isVoted ? 'Voted ✓ — click to remove' : 'Vote for this game'}
+            </button>
+          </div>
+        </div>
+      `);
+      const btn = card.querySelector('.vote-btn');
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const result = await fabcApiCastVote(g.id);
+        btn.disabled = false;
+        if (!result.ok){
+          fabcToast(result.error || 'Could not record your vote.', 'error');
+          return;
+        }
+        games = result.games;
+        myVote = result.gameId;
+        if (result.action === 'unvoted') fabcToast(`Vote removed from ${g.name}.`, 'success');
+        else if (result.action === 'switched') fabcToast(`Vote moved to ${g.name}!`, 'success');
+        else fabcToast(`Vote counted for ${g.name}!`, 'success');
+        render();
+      });
+      grid.appendChild(card);
+    });
+  }
+  render();
+})();
+</script>
+</body>
+</html>

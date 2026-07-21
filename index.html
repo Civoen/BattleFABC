@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For A Better Cause — Play. Compete. Give Back.</title>
+<meta name="description" content="FABC is an online gaming charity tournament group. Register your team, compete in bracket play, and raise money for causes that matter.">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="brand-mark">FA</span>FABC</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" aria-current="page">Home</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+      <li><a href="roster.html">Rosters</a></li>
+      <li><a href="bracket.html">Bracket</a></li>
+      <li><a href="vote.html">Games</a></li>
+      <li><a href="charities.html">Charities</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="bracket.html" class="btn btn-ghost btn-sm">View Tournament</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Sign Up Your Team</a>
+      <a href="admin.html" class="nav-admin-btn" title="Admin" aria-label="Admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="eyebrow" id="fldEyebrow">Online charity events and tournaments</div>
+      <h1>For A <span class="hl-accent">Better Cause</span></h1>
+      <p class="hero-sub" id="fldHeroSub">A non-profit group focused on raising money for charity. Turn your match wins into real-world impact.</p>
+      <div class="hero-ctas">
+        <a href="signup.html" class="btn btn-accent">Sign Up Your Team</a>
+        <a href="bracket.html" class="btn btn-ghost">View Tournament</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><b class="mono" id="statTeams">8</b><span>Teams competing</span></div>
+        <div class="hero-stat"><b class="mono" id="statRaised">$8,420</b><span>Raised this season</span></div>
+        <div class="hero-stat"><b class="mono" id="statCharities">6</b><span>Charities supported</span></div>
+      </div>
+
+      <div class="eyebrow" style="margin-top:44px;">Upcoming Event</div>
+      <div class="status-bar reveal" style="max-width:900px;margin-left:auto;margin-right:auto;">
+        <div class="status-item">
+          <span>Event</span>
+          <b id="fldEventName">Summer Clash 2026</b>
+        </div>
+        <div class="status-item">
+          <span>Type</span>
+          <b id="fldEventType">Quarterfinals</b>
+        </div>
+        <div class="status-item">
+          <span>Teams</span>
+          <b id="fldEventTeams">8 / 16 slots filled</b>
+        </div>
+        <div class="status-progress">
+          <span id="fundraisingLabel" style="display:block;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#9C98B5;font-weight:700;">Fundraising progress — $8,420 of $15,000</span>
+          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:56%"></div></div>
+        </div>
+        <a href="bracket.html" class="btn btn-accent btn-sm">Watch Live</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">How it works</div>
+          <h2>From sign-up to trophy in four steps</h2>
+        </div>
+        <p>No entry fee, no gatekeeping — just bring a team, pick a cause, and show up ready to play.</p>
+      </div>
+      <div class="grid grid-4">
+        <div class="card step-card reveal"><span class="step-num">01</span><h3 id="fldStep1Title">Build your squad</h3><p id="fldStep1Desc">Recruit your team, pick your game, and lock in your roster before registration closes.</p></div>
+        <div class="card step-card reveal"><span class="step-num">02</span><h3 id="fldStep2Title">Choose a charity</h3><p id="fldStep2Desc">Every team plays under the banner of an approved cause — you decide who you're fighting for.</p></div>
+        <div class="card step-card reveal"><span class="step-num">03</span><h3 id="fldStep3Title">Battle the bracket</h3><p id="fldStep3Desc">Single-elimination play across multiple rounds, all tracked live on the bracket page.</p></div>
+        <div class="card step-card reveal"><span class="step-num">04</span><h3 id="fldStep4Title">Raise real funds</h3><p id="fldStep4Desc">Match wins and community donations combine to push your charity's total higher.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPCOMING TOURNAMENT -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Upcoming tournament</div>
+        <h2 id="fldUpcomingTitle">Summer Clash 2026</h2>
+        <div class="actions"><a href="signup.html" class="btn btn-ghost">Register a team</a></div>
+      </div>
+      <div class="grid grid-3">
+        <div class="card reveal">
+          <div class="tag" id="fldUpcCard1Tag">Schedule</div>
+          <h3 style="margin-top:14px;" id="fldUpcCard1Title">Kicks off Aug 2</h3>
+          <p id="fldUpcCard1Desc">Quarterfinals are already underway — semifinals begin Saturday, August 2nd at 6:00 PM ET.</p>
+        </div>
+        <div class="card reveal">
+          <div class="tag" id="fldUpcCard2Tag">Format</div>
+          <h3 style="margin-top:14px;" id="fldUpcCard2Title">Single elimination</h3>
+          <p id="fldUpcCard2Desc">16-team bracket across Valorant, Rocket League, Overwatch 2, Smash, League, and Apex.</p>
+        </div>
+        <div class="card reveal">
+          <div class="tag" id="fldUpcCard3Tag">Prize</div>
+          <h3 style="margin-top:14px;" id="fldUpcCard3Title">Winner's charity gets 2x</h3>
+          <p id="fldUpcCard3Desc">The champion's chosen charity receives a matched donation on top of the season total.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENT RESULTS -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Recent match results</div>
+        <h2>Fresh off the bracket</h2>
+        <div class="actions"><a href="bracket.html" class="btn btn-ghost">Full bracket</a></div>
+      </div>
+      <div class="grid grid-3" id="recentResults"></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="padding-top:0;">
+    <div class="wrap">
+      <div class="cta-v2 reveal">
+        <div class="cta-chips">
+          <span class="chip">No entry fee</span>
+          <span class="chip">Pick your charity</span>
+          <span class="chip">Live tracked bracket</span>
+        </div>
+        <h2 id="fldCtaHeading">Your team. Your cause. One bracket.</h2>
+        <p id="fldCtaPara">Registration for Summer Clash 2026 is open until slots fill. It takes five minutes to lock in your roster.</p>
+        <a href="signup.html" class="btn btn-primary">Sign Up Your Team</a>
+        <div class="cta-stats">
+          <div class="cta-stat"><b class="mono" id="ctaStatTeams">8</b><span>Teams competing</span></div>
+          <div class="cta-stat"><b class="mono" id="ctaStatRaised">$8,420</b><span>Raised this season</span></div>
+          <div class="cta-stat"><b class="mono" id="ctaStatCharities">6</b><span>Charities supported</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="brand" style="color:#fff;"><span class="brand-mark">FA</span>FABC</a>
+        <p style="margin-top:14px;max-width:280px;">For A Better Cause is a community gaming group running charity tournaments across the games you already play.</p>
+      </div>
+      <div>
+        <h4>Tournament</h4>
+        <ul><li><a href="signup.html">Sign Up</a></li><li><a href="roster.html">Rosters</a></li><li><a href="bracket.html">Bracket</a></li></ul>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <ul><li><a href="vote.html">Games</a></li><li><a href="charities.html">Charities</a></li><li><a href="index.html#how">How it works</a></li></ul>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <ul><li><a href="https://x.com/BattleFABC" target="_blank" rel="noopener">X / Twitter</a></li><li><a href="#">Discord</a></li><li><a href="#">Twitch</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 For A Better Cause. All matches, all in good fun, all for good.</span>
+      <span>Built for the community, by the community.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+<script>
+  applyFabcContent();
+
+  (async function(){
+    const FABC_DATA = await fabcLoadData();
+    const resultsWrap = document.getElementById('recentResults');
+    const completed = FABC_DATA.matches.filter(m => m.status === 'completed').slice(0,3);
+    completed.forEach(m => {
+      const teamA = FABC_DATA.getTeam(m.teamA), teamB = FABC_DATA.getTeam(m.teamB);
+      const aWon = m.scoreA > m.scoreB;
+      resultsWrap.insertAdjacentHTML('beforeend', `
+        <div class="match-card reveal">
+          <div class="match-meta"><span class="match-round">${m.round}</span><span class="badge badge-completed">Final</span></div>
+          <div class="match-team ${aWon ? 'winner':''}">
+            <span class="who"><span class="mini-avatar" style="background:${colorFor(teamA.name)}">${initials(teamA.name)}</span>${teamA.name}</span>
+            <span class="score">${m.scoreA}</span>
+          </div>
+          <div class="match-team ${!aWon ? 'winner':''}">
+            <span class="who"><span class="mini-avatar" style="background:${colorFor(teamB.name)}">${initials(teamB.name)}</span>${teamB.name}</span>
+            <span class="score">${m.scoreB}</span>
+          </div>
+        </div>
+      `);
+    });
+  })();
+</script>
+</body>
+</html>

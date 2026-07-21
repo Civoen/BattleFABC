@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up Your Team — FABC</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="brand-mark">FA</span>FABC</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="signup.html" aria-current="page">Sign Up</a></li>
+      <li><a href="roster.html">Rosters</a></li>
+      <li><a href="bracket.html">Bracket</a></li>
+      <li><a href="vote.html">Games</a></li>
+      <li><a href="charities.html">Charities</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="bracket.html" class="btn btn-ghost btn-sm">View Tournament</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Sign Up Your Team</a>
+      <a href="admin.html" class="nav-admin-btn" title="Admin" aria-label="Admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="section--tight">
+    <div class="wrap page-intro" style="max-width:640px;">
+      <div class="eyebrow">Team registration</div>
+      <h1 style="font-size:clamp(2rem,4vw,2.8rem);">Sign up your team</h1>
+      <p>Fill out the roster below. Player fields adjust automatically once you pick a game, so the form always matches the required team size.</p>
+    </div>
+  </section>
+
+  <section class="section--tight" style="padding-top:0;">
+    <div class="wrap" style="max-width:760px;">
+
+      <!-- FORM STATE -->
+      <form id="signupForm" class="card" novalidate>
+        <h3 style="margin-bottom:22px;">Team information</h3>
+
+        <div class="field" id="field-teamName">
+          <label for="teamName">Team name</label>
+          <input type="text" id="teamName" name="teamName" placeholder="e.g. Nova Vanguard" autocomplete="off">
+          <div class="error-msg">Enter a team name — it's how you'll show up on the bracket.</div>
+        </div>
+
+        <div class="field" id="field-game">
+          <label for="game">Game</label>
+          <select id="game" name="game">
+            <option value="" disabled selected>Select a game</option>
+          </select>
+          <div class="hint" id="teamSizeHint"></div>
+          <div class="error-msg">Choose which game your team is competing in.</div>
+        </div>
+
+        <div class="field" id="field-charity">
+          <label for="charity">Charity you're playing for</label>
+          <select id="charity" name="charity">
+            <option value="" disabled selected>Select a charity</option>
+          </select>
+          <div class="error-msg">Pick the cause your team wants to raise funds for.</div>
+        </div>
+
+        <h3 style="margin:30px 0 18px;">Players</h3>
+        <div class="hint" style="margin-bottom:16px;">Enter each player's in-game username. Mark one player as team captain — they'll be the primary contact for match scheduling.</div>
+        <div id="playerFields"></div>
+
+        <h3 style="margin:30px 0 18px;">Contact information</h3>
+        <div class="field" id="field-discord">
+          <label for="discord">Discord tag</label>
+          <input type="text" id="discord" name="discord" placeholder="username" autocomplete="off">
+          <div class="hint">We'll use this to reach your captain about match scheduling.</div>
+          <div class="error-msg">Enter your Discord tag so we can reach your captain.</div>
+        </div>
+
+        <button type="submit" class="btn btn-accent btn-block" style="margin-top:10px;">Submit registration</button>
+      </form>
+
+      <!-- CONFIRMATION STATE (hidden until submit) -->
+      <div class="card confirm-box" id="confirmBox" hidden>
+        <div class="confirm-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h2 style="font-size:1.8rem;">You're registered!</h2>
+        <p id="confirmSummary">Your team has been added to the tournament.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+          <a href="roster.html" class="btn btn-primary">View the roster</a>
+          <a href="bracket.html" class="btn btn-ghost">See the bracket</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="brand" style="color:#fff;"><span class="brand-mark">FA</span>FABC</a>
+        <p style="margin-top:14px;max-width:280px;">For A Better Cause is a community gaming group running charity tournaments across the games you already play.</p>
+      </div>
+      <div><h4>Tournament</h4><ul><li><a href="signup.html">Sign Up</a></li><li><a href="roster.html">Rosters</a></li><li><a href="bracket.html">Bracket</a></li></ul></div>
+      <div><h4>Community</h4><ul><li><a href="vote.html">Games</a></li><li><a href="charities.html">Charities</a></li></ul></div>
+      <div><h4>Follow</h4><ul><li><a href="https://x.com/BattleFABC" target="_blank" rel="noopener">X / Twitter</a></li><li><a href="#">Discord</a></li><li><a href="#">Twitch</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 For A Better Cause. All matches, all in good fun, all for good.</span>
+      <span>Built for the community, by the community.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+<script>
+(async function(){
+  const FABC_DATA = await fabcLoadData();
+  const gameSelect = document.getElementById('game');
+  const charitySelect = document.getElementById('charity');
+  const playerFields = document.getElementById('playerFields');
+  const teamSizeHint = document.getElementById('teamSizeHint');
+  const form = document.getElementById('signupForm');
+  const confirmBox = document.getElementById('confirmBox');
+
+  FABC_DATA.games.forEach(g => {
+    gameSelect.insertAdjacentHTML('beforeend', `<option value="${g.id}">${g.name} — ${g.teamSize} player${g.teamSize>1?'s':''}</option>`);
+  });
+  FABC_DATA.charities.forEach(c => {
+    charitySelect.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name} (${c.category})</option>`);
+  });
+
+  function renderPlayerFields(size){
+    playerFields.innerHTML = '';
+    for (let i=1; i<=size; i++){
+      playerFields.insertAdjacentHTML('beforeend', `
+        <div class="field" id="field-player${i}">
+          <label for="player${i}">
+            Player ${i}
+            <label style="display:inline-flex;align-items:center;gap:6px;font-weight:600;text-transform:none;font-family:var(--font-body);font-size:.8rem;color:var(--ink-faint);float:right;">
+              <input type="radio" name="captain" value="${i}" ${i===1?'checked':''}> Captain
+            </label>
+          </label>
+          <input type="text" id="player${i}" name="player${i}" placeholder="In-game username" autocomplete="off">
+          <div class="error-msg">Enter this player's username.</div>
+        </div>
+      `);
+    }
+  }
+  renderPlayerFields(5);
+
+  gameSelect.addEventListener('change', () => {
+    const g = FABC_DATA.getGame(gameSelect.value);
+    if (!g) return;
+    teamSizeHint.textContent = `This game requires ${g.teamSize} player${g.teamSize>1?'s':''} — fields updated below.`;
+    renderPlayerFields(g.teamSize);
+    clearError('field-game');
+  });
+
+  function clearError(id){ document.getElementById(id)?.classList.remove('has-error'); }
+  function setError(id){ document.getElementById(id)?.classList.add('has-error'); }
+
+  form.addEventListener('input', (e) => {
+    if (e.target.closest('.field')) clearError(e.target.closest('.field').id);
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    const teamName = document.getElementById('teamName').value.trim();
+    if (!teamName){ setError('field-teamName'); valid = false; }
+
+    if (!gameSelect.value){ setError('field-game'); valid = false; }
+    if (!charitySelect.value){ setError('field-charity'); valid = false; }
+
+    const size = gameSelect.value ? FABC_DATA.getGame(gameSelect.value).teamSize : 5;
+    let players = [];
+    for (let i=1;i<=size;i++){
+      const val = document.getElementById(`player${i}`).value.trim();
+      if (!val){ setError(`field-player${i}`); valid = false; }
+      players.push(val);
+    }
+
+    const discord = document.getElementById('discord').value.trim();
+    if (!discord){ setError('field-discord'); valid = false; }
+
+    if (!valid){
+      fabcToast('Please fix the highlighted fields.', 'error');
+      form.querySelector('.has-error input, .has-error select')?.focus();
+      return;
+    }
+
+    const captainIdx = document.querySelector('input[name="captain"]:checked')?.value || 1;
+    const gameName = FABC_DATA.getGame(gameSelect.value).name;
+    const charityName = FABC_DATA.getCharity(charitySelect.value).name;
+
+    document.getElementById('confirmSummary').innerHTML =
+      `<strong>${teamName}</strong> is locked in for <strong>${gameName}</strong>, playing for <strong>${charityName}</strong>. Captain: <strong>${players[captainIdx-1]}</strong>. We'll reach out on Discord at <strong>${discord}</strong>.`;
+
+    form.hidden = true;
+    confirmBox.hidden = false;
+    confirmBox.scrollIntoView({ behavior:'smooth', block:'start' });
+    fabcToast('Team registered successfully!', 'success');
+  });
+})();
+</script>
+</body>
+</html>

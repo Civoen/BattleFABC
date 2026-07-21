@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roster — FABC</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+.modal-backdrop{ position:fixed; inset:0; background:rgba(20,18,31,.55); display:flex; align-items:center; justify-content:center; padding:20px; z-index:400; opacity:0; pointer-events:none; transition:opacity .2s var(--ease); }
+.modal-backdrop.open{ opacity:1; pointer-events:auto; }
+.modal{ background:#fff; border-radius: var(--radius-lg); padding:32px; max-width:480px; width:100%; box-shadow: var(--shadow-lg); transform: translateY(12px); transition: transform .2s var(--ease); max-height:86vh; overflow-y:auto; }
+.modal-backdrop.open .modal{ transform:none; }
+.modal-close{ float:right; background:none; border:none; font-size:1.4rem; color:var(--ink-faint); line-height:1; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="brand-mark">FA</span>FABC</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+      <li><a href="roster.html" aria-current="page">Rosters</a></li>
+      <li><a href="bracket.html">Bracket</a></li>
+      <li><a href="vote.html">Games</a></li>
+      <li><a href="charities.html">Charities</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="bracket.html" class="btn btn-ghost btn-sm">View Tournament</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Sign Up Your Team</a>
+      <a href="admin.html" class="nav-admin-btn" title="Admin" aria-label="Admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="section--tight">
+    <div class="wrap page-intro">
+      <div class="eyebrow">Tournament roster</div>
+      <h1 style="font-size:clamp(2rem,4vw,2.8rem);" id="fldRosterTitle">Every team in Summer Clash 2026</h1>
+      <p>Browse the full lineup, search by name, or filter by game and charity. Click any team to see their full roster.</p>
+    </div>
+  </section>
+
+  <section class="section--tight" style="padding-top:0;">
+    <div class="wrap">
+      <div class="filter-bar">
+        <input type="search" id="searchInput" placeholder="Search by team name…" aria-label="Search teams">
+        <select id="gameFilter" aria-label="Filter by game">
+          <option value="">All games</option>
+        </select>
+        <select id="charityFilter" aria-label="Filter by charity">
+          <option value="">All charities</option>
+        </select>
+      </div>
+
+      <div class="grid grid-3" id="teamGrid"></div>
+      <div class="empty-state" id="emptyState" hidden>
+        <h3>No teams match your filters</h3>
+        <p class="mb-0">Try clearing your search or picking a different game/charity.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalContent" role="dialog" aria-modal="true"></div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div><a href="index.html" class="brand" style="color:#fff;"><span class="brand-mark">FA</span>FABC</a><p style="margin-top:14px;max-width:280px;">For A Better Cause is a community gaming group running charity tournaments across the games you already play.</p></div>
+      <div><h4>Tournament</h4><ul><li><a href="signup.html">Sign Up</a></li><li><a href="roster.html">Rosters</a></li><li><a href="bracket.html">Bracket</a></li></ul></div>
+      <div><h4>Community</h4><ul><li><a href="vote.html">Games</a></li><li><a href="charities.html">Charities</a></li></ul></div>
+      <div><h4>Follow</h4><ul><li><a href="https://x.com/BattleFABC" target="_blank" rel="noopener">X / Twitter</a></li><li><a href="#">Discord</a></li><li><a href="#">Twitch</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 For A Better Cause. All matches, all in good fun, all for good.</span><span>Built for the community, by the community.</span></div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+<script>
+(async function(){
+  const titleEl = document.getElementById('fldRosterTitle');
+  if (titleEl){
+    const c = await getFabcContent();
+    titleEl.textContent = `Every team in ${c.event.name}`;
+  }
+})();
+(async function(){
+  const FABC_DATA = await fabcLoadData();
+  const grid = document.getElementById('teamGrid');
+  const emptyState = document.getElementById('emptyState');
+  const searchInput = document.getElementById('searchInput');
+  const gameFilter = document.getElementById('gameFilter');
+  const charityFilter = document.getElementById('charityFilter');
+  const backdrop = document.getElementById('modalBackdrop');
+  const modalContent = document.getElementById('modalContent');
+
+  FABC_DATA.games.forEach(g => gameFilter.insertAdjacentHTML('beforeend', `<option value="${g.id}">${g.name}</option>`));
+  FABC_DATA.charities.forEach(c => charityFilter.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`));
+
+  function statusBadge(status){
+    if (status === 'confirmed') return '<span class="badge badge-completed" style="color:#0A8A7C;background:var(--teal-tint);">Confirmed</span>';
+    if (status === 'pending') return '<span class="badge badge-open">Pending</span>';
+    return '<span class="badge badge-upcoming">' + status + '</span>';
+  }
+
+  function renderTeams(){
+    const q = searchInput.value.trim().toLowerCase();
+    const game = gameFilter.value;
+    const charity = charityFilter.value;
+
+    const filtered = FABC_DATA.teams.filter(t => {
+      if (q && !t.name.toLowerCase().includes(q)) return false;
+      if (game && t.game !== game) return false;
+      if (charity && t.charity !== charity) return false;
+      return true;
+    });
+
+    grid.innerHTML = '';
+    emptyState.hidden = filtered.length !== 0;
+
+    filtered.forEach(t => {
+      const g = FABC_DATA.getGame(t.game);
+      const c = FABC_DATA.getCharity(t.charity);
+      const card = fabcEl(`
+        <div class="card team-card reveal in" tabindex="0" role="button" data-id="${t.id}">
+          <div class="team-top">
+            <div class="team-logo" style="background:${colorFor(t.name)}">${initials(t.name)}</div>
+            <div>
+              <h3>${t.name}</h3>
+              <span class="tag">${g.name}</span>
+            </div>
+          </div>
+          <div class="player-list">
+            ${t.players.map((p,i) => `<span class="player-chip ${i===t.captainIdx?'captain':''}">${p}${i===t.captainIdx?' · C':''}</span>`).join('')}
+          </div>
+          <div class="team-footer">
+            <span class="muted">Playing for <strong style="color:var(--ink)">${c.name}</strong></span>
+            ${statusBadge(t.status)}
+          </div>
+        </div>
+      `);
+      card.addEventListener('click', () => openModal(t.id));
+      card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openModal(t.id); });
+      grid.appendChild(card);
+    });
+  }
+
+  function openModal(id){
+    const t = FABC_DATA.getTeam(id);
+    const g = FABC_DATA.getGame(t.game);
+    const c = FABC_DATA.getCharity(t.charity);
+    modalContent.innerHTML = `
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <div class="team-top" style="margin-top:8px;">
+        <div class="team-logo" style="background:${colorFor(t.name)};width:64px;height:64px;font-size:1.4rem;">${initials(t.name)}</div>
+        <div><h2 style="margin-bottom:2px;font-size:1.6rem;">${t.name}</h2><span class="tag">${g.name} · ${g.teamSize}v${g.teamSize}</span></div>
+      </div>
+      <p style="margin-top:18px;"><strong>Playing for:</strong> ${c.name} (${c.category})</p>
+      <p><strong>Status:</strong> ${t.status === 'confirmed' ? 'Confirmed for bracket play' : 'Pending confirmation'}</p>
+      <h3 style="margin-top:20px;">Roster</h3>
+      <div class="player-list">
+        ${t.players.map((p,i) => `<span class="player-chip ${i===t.captainIdx?'captain':''}">${p}${i===t.captainIdx?' · Captain':''}</span>`).join('')}
+      </div>
+      <a href="bracket.html" class="btn btn-primary btn-block" style="margin-top:22px;">See their bracket path</a>
+    `;
+    modalContent.querySelector('.modal-close').addEventListener('click', closeModal);
+    backdrop.classList.add('open');
+  }
+  function closeModal(){ backdrop.classList.remove('open'); }
+  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+  [searchInput, gameFilter, charityFilter].forEach(el => el.addEventListener('input', renderTeams));
+  renderTeams();
+})();
+</script>
+</body>
+</html>

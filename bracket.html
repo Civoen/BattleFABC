@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tournament Bracket — FABC</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand"><span class="brand-mark">FA</span>FABC</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+      <li><a href="roster.html">Rosters</a></li>
+      <li><a href="bracket.html" aria-current="page">Bracket</a></li>
+      <li><a href="vote.html">Games</a></li>
+      <li><a href="charities.html">Charities</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="bracket.html" class="btn btn-ghost btn-sm">View Tournament</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Sign Up Your Team</a>
+      <a href="admin.html" class="nav-admin-btn" title="Admin" aria-label="Admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="section--tight">
+    <div class="wrap page-intro">
+      <div class="eyebrow">Summer Clash 2026</div>
+      <h1 style="font-size:clamp(2rem,4vw,2.8rem);">Tournament bracket</h1>
+      <p>Single elimination, 8 confirmed teams. Currently in the <strong style="color:var(--ink)">Quarterfinals</strong> — one match is live right now.</p>
+      <span class="badge badge-live" style="margin-top:6px;">Round 1 of 3 in progress</span>
+    </div>
+  </section>
+
+  <section class="section--tight" style="padding-top:0;">
+    <div class="wrap">
+      <div class="bracket-scroll">
+        <div class="bracket" id="bracketEl"></div>
+      </div>
+      <p class="muted" style="text-align:center;margin-top:10px;font-size:.85rem;">Scroll horizontally on smaller screens to see every round →</p>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="wrap">
+      <div class="data-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span>This bracket renders from tournament match data — in production, match results and status would update automatically as scores are reported, without touching this page's code.</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div><a href="index.html" class="brand" style="color:#fff;"><span class="brand-mark">FA</span>FABC</a><p style="margin-top:14px;max-width:280px;">For A Better Cause is a community gaming group running charity tournaments across the games you already play.</p></div>
+      <div><h4>Tournament</h4><ul><li><a href="signup.html">Sign Up</a></li><li><a href="roster.html">Rosters</a></li><li><a href="bracket.html">Bracket</a></li></ul></div>
+      <div><h4>Community</h4><ul><li><a href="vote.html">Games</a></li><li><a href="charities.html">Charities</a></li></ul></div>
+      <div><h4>Follow</h4><ul><li><a href="https://x.com/BattleFABC" target="_blank" rel="noopener">X / Twitter</a></li><li><a href="#">Discord</a></li><li><a href="#">Twitch</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 For A Better Cause. All matches, all in good fun, all for good.</span><span>Built for the community, by the community.</span></div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+<script>
+(async function(){
+  const FABC_DATA = await fabcLoadData();
+  const bracketEl = document.getElementById('bracketEl');
+  const rounds = [
+    { title: 'Quarterfinals', matches: FABC_DATA.matches.filter(m => m.round === 'Quarterfinal') },
+    { title: 'Semifinals', matches: FABC_DATA.matches.filter(m => m.round === 'Semifinal') },
+    { title: 'Final', matches: FABC_DATA.matches.filter(m => m.round === 'Final') },
+  ];
+
+  function teamLabel(id){
+    if (!id) return { name: 'TBD', color: '#C9C6DA', ini: '—' };
+    const t = FABC_DATA.getTeam(id);
+    return { name: t.name, color: colorFor(t.name), ini: initials(t.name) };
+  }
+
+  function statusBadge(m){
+    if (m.status === 'live') return '<span class="badge badge-live">Live</span>';
+    if (m.status === 'completed') return '<span class="badge badge-completed">Final</span>';
+    if (m.status === 'upcoming') return '<span class="badge badge-upcoming">Upcoming</span>';
+    return '<span class="badge badge-upcoming" style="background:var(--bg-sunk);color:var(--ink-faint);">TBD</span>';
+  }
+
+  rounds.forEach(round => {
+    const roundCol = fabcEl(`<div class="bracket-round"><div class="bracket-round-title">${round.title}</div></div>`);
+    round.matches.forEach(m => {
+      const a = teamLabel(m.teamA), b = teamLabel(m.teamB);
+      const aWon = m.status === 'completed' && m.scoreA > m.scoreB;
+      const bWon = m.status === 'completed' && m.scoreB > m.scoreA;
+      const scheduleLine = m.status === 'upcoming' && m.schedule ? `<div class="muted mono" style="font-size:.72rem;margin-top:8px;">${m.schedule}</div>` : '';
+      roundCol.insertAdjacentHTML('beforeend', `
+        <div class="match-card reveal in">
+          <div class="match-meta"><span class="match-round">${m.round}</span>${statusBadge(m)}</div>
+          <div class="match-team ${aWon ? 'winner':''}">
+            <span class="who"><span class="mini-avatar" style="background:${a.color}">${a.ini}</span>${a.name}</span>
+            <span class="score">${m.scoreA ?? '–'}</span>
+          </div>
+          <div class="match-team ${bWon ? 'winner':''}">
+            <span class="who"><span class="mini-avatar" style="background:${b.color}">${b.ini}</span>${b.name}</span>
+            <span class="score">${m.scoreB ?? '–'}</span>
+          </div>
+          ${scheduleLine}
+        </div>
+      `);
+    });
+    bracketEl.appendChild(roundCol);
+  });
+})();
+</script>
+</body>
+</html>
