@@ -6,6 +6,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
+@font-face{
+  font-family: 'Techna Sans';
+  src: url('../assets/fonts/TechnaSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root{
   /* --- color: pulled from the FABC brand mark (charcoal + brand blue on faceted light grey) --- */
   --ink: #2A2A2E;
